@@ -1,0 +1,2 @@
+include versioneer.py
+include pvview_app/_version.py
