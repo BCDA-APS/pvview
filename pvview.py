@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
-from pvview_app import pvview
+from pvview import pvview
 pvview.main()

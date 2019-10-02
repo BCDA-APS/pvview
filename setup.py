@@ -11,7 +11,7 @@ import sys
 import versioneer
 
 # pull in some definitions from the package's __init__.py file
-import pvview_app as package
+import pvview as package
 
 long_description = open('README.md', 'r').read()
 
