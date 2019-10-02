@@ -1,2 +1,5 @@
+include README.md
+include CHANGES*
+include LICENSE
 include versioneer.py
-include pvview_app/_version.py
+include apstools/_version.py
