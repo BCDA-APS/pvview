@@ -63,7 +63,6 @@ class PVView(QWidget):
 def main():
     app = QApplication(sys.argv)
     probe = PVView()
-    pvnames = "sky:iso8601 xxx:iso8601".split()
     if len(sys.argv) < 2:
         raise RuntimeError("Need one or more EPICS PVs on command line")
     pvnames = sys.argv[1:]
