@@ -8,7 +8,7 @@ __institution__         = u"Advanced Photon Source"
 __author_name__         = __author__
 __author_email__        = __email__
 
-__copyright__           = u'2016-2019, Pete R. Jemian'
+__copyright__           = u'2009-2019, Pete R. Jemian'
 # __license_url__         = u''
 __license__             = u'OPEN SOURCE LICENSE'
 __url__                 = u'https://github.com/BCDA-APS/pvview/'
