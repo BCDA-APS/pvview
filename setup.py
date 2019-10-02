@@ -35,6 +35,6 @@ setup (
     classifiers      = package.__classifiers__,
     entry_points={
        # create & install CLI and GUI scripts in <python>/bin
-       'gui_scripts': ['pvview = pvview:main'],
+       'gui_scripts': ['pvview = pvview.pvview:main'],
        },
       )
