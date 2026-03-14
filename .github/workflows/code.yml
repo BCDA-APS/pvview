@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Install ruff
         run: pip install ruff
@@ -62,7 +62,7 @@ jobs:
         run: pytest --cov=pvview --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
-        if: matrix.python-version == '3.11'
+        if: matrix.python-version == '3.14'
         uses: codecov/codecov-action@v4
         with:
           files: coverage.xml

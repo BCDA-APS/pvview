@@ -12,7 +12,7 @@ pip install pvview
 Use conda to create an isolated Python environment, then pip for everything else:
 
 ```bash
-conda create -n pvview python=3.11
+conda create -n pvview python=3.14
 conda activate pvview
 pip install pvview
 ```
@@ -22,7 +22,7 @@ pip install pvview
 ```bash
 git clone https://github.com/BCDA-APS/pvview.git
 cd pvview
-conda create -n pvview python=3.11
+conda create -n pvview python=3.14
 conda activate pvview
 pip install -e .
 ```
