@@ -19,10 +19,14 @@ Change History
 
 ## 1.1.1  2026-03-14
 
-Adopt PyDM requirement: PyQt5.
+### Maintenance
+
+- Adopt PyDM requirement: PyQt5.
 
 ## 1.1.0  2026-03-14
 
-Update to PySide6.
+### Maintenance
+
+- Update to PySide6.
 
 ## 1.0.0  2019-10-02
