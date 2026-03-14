@@ -11,7 +11,7 @@ authors = [{name = "Pete R. Jemian", email = "jemian@anl.gov"}]
 # license = {text = "OPEN SOURCE LICENSE (UChicago Argonne)"}
 license = "LicenseRef-ANL-Open-Source-License"
 license-files = ["LICENSE"]
-keywords = ["Python", "Qt6", "PyDM", "EPICS"]
+keywords = ["Python", "Qt5", "PyDM", "EPICS"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Utilities",
 ]
 requires-python = ">=3.9"
-dependencies = ["pydm", "PySide6"]
+dependencies = ["pydm", "PyQt5"]
 
 [project.gui-scripts]
 pvview = "pvview.pvview:main"

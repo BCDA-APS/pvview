@@ -47,9 +47,9 @@ isort --sl src/ tests/
 
 ## Key constraints
 
-- **Qt version**: PySide6 only (PyDM does not support PyQt6). Enum access uses nested form: `QFrame.Shape.Panel`, `QFrame.Shadow.Raised/Sunken`. Event loop uses `app.exec()` (no trailing underscore).
-- **EPICS dependency**: `PyDMLabel` requires PyDM and a Channel Access environment at runtime. Tests that instantiate `PVView` skip automatically when PySide6 is absent; tests that call `add()` with a real PV name would need a live IOC.
-- **Lazy loading**: `PVNameLabel`, `PVValueLabel`, and `PVView` are NOT defined at module import time. They are injected into module globals by `_init_classes()` on first use. Do not add Qt/PyDM imports at the module's top level — this would break the `--help` speedup.
-- **Test teardown**: The `qt_app` fixture is session-scoped and explicitly shuts down `PyEPICSPlugin.thread_pool` and `RulesEngine` before exiting, to prevent a PySide6 QThread teardown crash.
+- **Qt version**: PyQt5 only (conda-forge PyDM pins `pyqt =5`). Enum access uses flat form: `QFrame.Panel`, `QFrame.Raised`, `QFrame.Sunken`. Event loop uses `app.exec_()` (trailing underscore).
+- **EPICS dependency**: `PyDMLabel` requires PyDM and a Channel Access environment at runtime. Tests that instantiate `PVView` skip automatically when PyQt5 is absent; tests that call `add()` with a real PV name would need a live IOC.
+- **Lazy loading**: `PVNameLabel`, `PVValueLabel`, and `PVView` are NOT defined at module import time. They are injected into module globals by `_init_classes()` on first use. Do not add Qt/PyDM imports at the module's top level — this would break the `--help` speedup. `QT_API` is set via `os.environ.setdefault` at module top-level (safe: no Qt import) so it is in place before any PyDM import.
+- **Test teardown**: The `qt_app` fixture is session-scoped and explicitly shuts down `PyEPICSPlugin.thread_pool` and `RulesEngine` before exiting, to prevent a QThread teardown crash.
 - **Versioning**: managed by `setuptools-scm` from git tags. Do not manually edit `__version__`.
 - **Import style**: `isort --sl` (force single-line) is enforced by pre-commit. Each symbol gets its own `from X import Y` line.

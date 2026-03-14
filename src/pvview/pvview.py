@@ -9,8 +9,10 @@ EXAMPLE:
 """
 
 import argparse
+import os
 import sys
 
+os.environ.setdefault("QT_API", "pyqt5")
 _LAZY_ATTRS = frozenset({"PVNameLabel", "PVValueLabel", "PVView"})
 
 
@@ -20,18 +22,15 @@ def _init_classes():
     if "PVView" in _globals:
         return _globals["PVNameLabel"], _globals["PVValueLabel"], _globals["PVView"]
 
-    import os
     from datetime import datetime
-
-    os.environ.setdefault("QT_API", "pyside6")
 
     from pydm.widgets.display_format import DisplayFormat
     from pydm.widgets.label import PyDMLabel
-    from PySide6.QtGui import QFont
-    from PySide6.QtWidgets import QFrame
-    from PySide6.QtWidgets import QGridLayout
-    from PySide6.QtWidgets import QLabel
-    from PySide6.QtWidgets import QWidget
+    from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import QFrame
+    from PyQt5.QtWidgets import QGridLayout
+    from PyQt5.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QWidget
 
     class PVNameLabel(PyDMLabel):
         """PyDMLabel showing a PV's .DESC field; falls back to the PV name when DESC is empty or unavailable."""
@@ -76,8 +75,8 @@ def _init_classes():
 
             name_label = QLabel(name_header)
             value_label = QLabel("PV Value")
-            self.formatWidget(name_label, QFrame.Shadow.Raised, bold=True)
-            self.formatWidget(value_label, QFrame.Shadow.Raised, bold=True)
+            self.formatWidget(name_label, QFrame.Raised, bold=True)
+            self.formatWidget(value_label, QFrame.Raised, bold=True)
 
             self.grid = QGridLayout()
             self.grid.addWidget(name_label, 0, 0)
@@ -104,8 +103,8 @@ def _init_classes():
 
         def formatWidget(self, widget, shadow=None, bold=False):
             """Apply panel frame, shadow, and optional bold font to a widget."""
-            shadow = shadow or QFrame.Shadow.Sunken
-            widget.setFrameShape(QFrame.Shape.Panel)
+            shadow = shadow or QFrame.Sunken
+            widget.setFrameShape(QFrame.Panel)
             widget.setFrameShadow(shadow)
             widget.setLineWidth(2)
             if bold:
@@ -138,7 +137,7 @@ def _launch(args):
 
     from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
     from pydm.widgets.rules import RulesDispatcher
-    from PySide6.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication
 
     app = QApplication.instance() or QApplication(sys.argv)
     name_header = "Name / Description" if args.desc else "PV Name"
@@ -146,7 +145,7 @@ def _launch(args):
     for pvname in args.pvnames:
         probe.add(pvname, show_desc=args.desc)
     probe.show()
-    ret = app.exec()
+    ret = app.exec_()
     gc.collect()
     if PyEPICSPlugin.thread_pool is not None:
         PyEPICSPlugin.thread_pool.shutdown(wait=True)

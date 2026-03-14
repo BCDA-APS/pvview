@@ -39,15 +39,15 @@ def test_pvview_lazy_class_access(qt_app):
 
 
 # ---------------------------------------------------------------------------
-# Qt-dependent tests — skipped automatically when PySide6 is not available
+# Qt-dependent tests — skipped automatically when PyQt5 is not available
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture(scope="session")
 def qt_app():
-    """Provide a QApplication instance; skip if PySide6 is not available."""
-    pytest.importorskip("PySide6")
-    from PySide6.QtWidgets import QApplication
+    """Provide a QApplication instance; skip if PyQt5 is not available."""
+    pytest.importorskip("PyQt5")
+    from PyQt5.QtWidgets import QApplication
 
     app = QApplication.instance() or QApplication(sys.argv)
     yield app
@@ -86,46 +86,46 @@ def test_pvview_grid_has_two_header_widgets(qt_app):
 
 def test_format_widget_default_shadow_is_sunken(qt_app):
     """Test that formatWidget uses Sunken shadow by default."""
-    from PySide6.QtWidgets import QFrame
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QFrame
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
     view = PVView()
     label = QLabel("test")
     view.formatWidget(label)
-    assert label.frameShadow() == QFrame.Shadow.Sunken
+    assert label.frameShadow() == QFrame.Sunken
 
 
 def test_format_widget_raised_shadow(qt_app):
     """Test that formatWidget applies Raised shadow when requested."""
-    from PySide6.QtWidgets import QFrame
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QFrame
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
     view = PVView()
     label = QLabel("test")
-    view.formatWidget(label, shadow=QFrame.Shadow.Raised)
-    assert label.frameShadow() == QFrame.Shadow.Raised
+    view.formatWidget(label, shadow=QFrame.Raised)
+    assert label.frameShadow() == QFrame.Raised
 
 
 def test_format_widget_panel_shape(qt_app):
     """Test that formatWidget sets Panel frame shape."""
-    from PySide6.QtWidgets import QFrame
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QFrame
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
     view = PVView()
     label = QLabel("test")
     view.formatWidget(label)
-    assert label.frameShape() == QFrame.Shape.Panel
+    assert label.frameShape() == QFrame.Panel
 
 
 def test_format_widget_bold(qt_app):
     """Test that formatWidget applies bold font when requested."""
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
@@ -137,7 +137,7 @@ def test_format_widget_bold(qt_app):
 
 def test_format_widget_not_bold(qt_app):
     """Test that formatWidget leaves font non-bold by default."""
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
@@ -149,7 +149,7 @@ def test_format_widget_not_bold(qt_app):
 
 def test_format_widget_line_width(qt_app):
     """Test that formatWidget sets line width to 2."""
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVView
 
@@ -226,7 +226,7 @@ def test_pvview_add_show_desc_true_uses_pvnamelabel(qt_app):
 
 def test_pvview_add_show_desc_false_uses_qlabel(qt_app):
     """Test that add() uses a plain QLabel when show_desc=False."""
-    from PySide6.QtWidgets import QLabel
+    from PyQt5.QtWidgets import QLabel
 
     from pvview.pvview import PVNameLabel
     from pvview.pvview import PVView
