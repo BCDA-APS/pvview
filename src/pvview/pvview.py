@@ -29,17 +29,20 @@ class PVNameLabel(PyDMLabel):
     """PyDMLabel showing a PV's .DESC field; falls back to the PV name when DESC is empty or unavailable."""
 
     def __init__(self, pvname, *args, **kwargs):
+        """Connect to pvname's .DESC field and store pvname as the tooltip."""
         self._pvname = pvname
         desc_pvname = pvname.split(".")[0] + ".DESC"
         super().__init__(*args, init_channel=f"ca://{desc_pvname}", **kwargs)
         self.setToolTip(pvname)
 
     def value_changed(self, new_value):
+        """Show the PV name when the DESC value is empty or whitespace."""
         super().value_changed(new_value)
         if not self.text().strip():
             self.setText(self._pvname)
 
     def check_enable_state(self):
+        """Display the PV name while the channel is disconnected."""
         self.setText(self._pvname)
 
 
@@ -47,10 +50,12 @@ class PVValueLabel(PyDMLabel):
     """PyDMLabel that decodes char waveforms and shows the last-update time as a tooltip."""
 
     def __init__(self, *args, **kwargs):
+        """Set display format to String so char waveforms render as text."""
         super().__init__(*args, **kwargs)
         self.displayFormat = DisplayFormat.String
 
     def value_changed(self, new_value):
+        """Update the tooltip with the current timestamp on each new value."""
         super().value_changed(new_value)
         self.setToolTip(datetime.now().isoformat(sep=" ", timespec="seconds"))
 
@@ -59,6 +64,7 @@ class PVView(QWidget):
     """Display EPICS PVs in a GUI table."""
 
     def __init__(self, name_header="Name / Description", parent=None):
+        """Build the two-column grid layout with a header row."""
         super().__init__(parent)
         self.db = {}
 
@@ -77,7 +83,7 @@ class PVView(QWidget):
         self.setWindowTitle("EPICS PV View")
 
     def add(self, pvname, show_desc=True):
-        """add a PV to the table"""
+        """Add a PV row to the table; no-op if pvname is already present."""
         if pvname in self.db:
             return
         row = len(self.db) + 1
@@ -91,7 +97,7 @@ class PVView(QWidget):
         self.grid.addWidget(widget, row, 1)
 
     def formatWidget(self, widget, shadow=None, bold=False):
-        """apply some styles to the widget"""
+        """Apply panel frame, shadow, and optional bold font to a widget."""
         shadow = shadow or QFrame.Shadow.Sunken
         widget.setFrameShape(QFrame.Shape.Panel)
         widget.setFrameShadow(shadow)
@@ -103,6 +109,7 @@ class PVView(QWidget):
 
 
 def main():
+    """Parse CLI arguments, launch the PVView window, and clean up on exit."""
     import gc
     from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
     from pydm.widgets.rules import RulesDispatcher
