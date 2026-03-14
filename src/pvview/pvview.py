@@ -9,8 +9,11 @@ EXAMPLE:
 """
 
 import argparse
+import os
 import sys
 from datetime import datetime
+
+os.environ.setdefault("QT_API", "pyside6")
 
 from pydm.widgets.display_format import DisplayFormat
 from pydm.widgets.label import PyDMLabel
@@ -28,7 +31,7 @@ class PVNameLabel(PyDMLabel):
     def __init__(self, pvname, *args, **kwargs):
         self._pvname = pvname
         desc_pvname = pvname.split(".")[0] + ".DESC"
-        super().__init__(init_channel=f"ca://{desc_pvname}", *args, **kwargs)
+        super().__init__(*args, init_channel=f"ca://{desc_pvname}", **kwargs)
         self.setToolTip(pvname)
 
     def value_changed(self, new_value):
@@ -56,7 +59,7 @@ class PVView(QWidget):
     """Display EPICS PVs in a GUI table."""
 
     def __init__(self, name_header="Name / Description", parent=None):
-        QWidget.__init__(self, parent)
+        super().__init__(parent)
         self.db = {}
 
         name_label = QLabel(name_header)
@@ -94,13 +97,15 @@ class PVView(QWidget):
         widget.setFrameShadow(shadow)
         widget.setLineWidth(2)
         if bold:
-            myFont = QFont()
-            myFont.setBold(True)
-            widget.setFont(myFont)
+            my_font = QFont()
+            my_font.setBold(True)
+            widget.setFont(my_font)
 
 
 def main():
+    import gc
     from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
+    from pydm.widgets.rules import RulesDispatcher
 
     app = QApplication.instance() or QApplication(sys.argv)
     parser = argparse.ArgumentParser(
@@ -123,8 +128,14 @@ def main():
         probe.add(pvname, show_desc=args.desc)
     probe.show()
     ret = app.exec()
+    gc.collect()
     if PyEPICSPlugin.thread_pool is not None:
         PyEPICSPlugin.thread_pool.shutdown(wait=True)
+    rules_engine = RulesDispatcher().rules_engine
+    if rules_engine.isRunning():
+        rules_engine.requestInterruption()
+        rules_engine.quit()
+        rules_engine.wait(1000)
     sys.exit(ret)
 
 
