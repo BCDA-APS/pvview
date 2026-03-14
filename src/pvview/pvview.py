@@ -15,14 +15,14 @@ from datetime import datetime
 
 os.environ.setdefault("QT_API", "pyside6")
 
-from pydm.widgets.display_format import DisplayFormat
-from pydm.widgets.label import PyDMLabel
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QFrame
-from PySide6.QtWidgets import QGridLayout
-from PySide6.QtWidgets import QLabel
-from PySide6.QtWidgets import QWidget
+from pydm.widgets.display_format import DisplayFormat  # noqa: E402
+from pydm.widgets.label import PyDMLabel  # noqa: E402
+from PySide6.QtGui import QFont  # noqa: E402
+from PySide6.QtWidgets import QApplication  # noqa: E402
+from PySide6.QtWidgets import QFrame  # noqa: E402
+from PySide6.QtWidgets import QGridLayout  # noqa: E402
+from PySide6.QtWidgets import QLabel  # noqa: E402
+from PySide6.QtWidgets import QWidget  # noqa: E402
 
 
 class PVNameLabel(PyDMLabel):
