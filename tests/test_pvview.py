@@ -163,6 +163,14 @@ def test_pvview_add_deduplication(qt_app):
     assert len(view.db) == 1
 
 
+def test_pvnamelabel_tooltip_is_pvname(qt_app):
+    """Test that PVNameLabel always shows the PV name as a tooltip."""
+    from pvview.pvview import PVNameLabel
+
+    label = PVNameLabel("fake:pv")
+    assert label.toolTip() == "fake:pv"
+
+
 def test_pvnamelabel_shows_pvname_when_disconnected(qt_app):
     """Test that PVNameLabel shows the PV name (not the channel URI) when disconnected."""
     from pvview.pvview import PVNameLabel
@@ -195,6 +203,31 @@ def test_pvnamelabel_value_changed_falls_back_to_pvname(qt_app):
     label = PVNameLabel("fake:pv")
     label.value_changed("")
     assert label.text() == "fake:pv"
+
+
+def test_pvview_add_show_desc_true_uses_pvnamelabel(qt_app):
+    """Test that add() uses PVNameLabel when show_desc=True (default)."""
+    from pvview.pvview import PVNameLabel
+    from pvview.pvview import PVView
+
+    view = PVView()
+    view.add("fake:pv")
+    label = view.grid.itemAtPosition(1, 0).widget()
+    assert isinstance(label, PVNameLabel)
+
+
+def test_pvview_add_show_desc_false_uses_qlabel(qt_app):
+    """Test that add() uses a plain QLabel when show_desc=False."""
+    from PySide6.QtWidgets import QLabel
+
+    from pvview.pvview import PVNameLabel
+    from pvview.pvview import PVView
+
+    view = PVView()
+    view.add("fake:pv", show_desc=False)
+    label = view.grid.itemAtPosition(1, 0).widget()
+    assert isinstance(label, QLabel)
+    assert not isinstance(label, PVNameLabel)
 
 
 def test_pydmlabel_display_format_is_string(qt_app):

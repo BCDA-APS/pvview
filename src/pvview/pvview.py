@@ -29,6 +29,7 @@ class PVNameLabel(PyDMLabel):
         self._pvname = pvname
         desc_pvname = pvname.split(".")[0] + ".DESC"
         super().__init__(init_channel=f"ca://{desc_pvname}", *args, **kwargs)
+        self.setToolTip(pvname)
 
     def value_changed(self, new_value):
         super().value_changed(new_value)
@@ -54,11 +55,11 @@ class PVValueLabel(PyDMLabel):
 class PVView(QWidget):
     """Display EPICS PVs in a GUI table."""
 
-    def __init__(self, parent=None):
+    def __init__(self, name_header="Name / Description", parent=None):
         QWidget.__init__(self, parent)
         self.db = {}
 
-        name_label = QLabel("PV Name")
+        name_label = QLabel(name_header)
         value_label = QLabel("PV Value")
         self.formatWidget(name_label, QFrame.Shadow.Raised, bold=True)
         self.formatWidget(value_label, QFrame.Shadow.Raised, bold=True)
@@ -72,12 +73,12 @@ class PVView(QWidget):
         self.setLayout(self.grid)
         self.setWindowTitle("EPICS PV View")
 
-    def add(self, pvname):
+    def add(self, pvname, show_desc=True):
         """add a PV to the table"""
         if pvname in self.db:
             return
         row = len(self.db) + 1
-        label = PVNameLabel(pvname)
+        label = PVNameLabel(pvname) if show_desc else QLabel(pvname)
         widget = PVValueLabel(init_channel=f"ca://{pvname}")
         widget.useAlarmState = True
         self.formatWidget(label)
@@ -105,10 +106,17 @@ def main():
         description="Display EPICS PVs in a table.",
     )
     parser.add_argument("pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display")
+    parser.add_argument(
+        "--desc",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="show PV description in name column (default: enabled)",
+    )
     args = parser.parse_args()
-    probe = PVView()
+    name_header = "Name / Description" if args.desc else "PV Name"
+    probe = PVView(name_header=name_header)
     for pvname in args.pvnames:
-        probe.add(pvname)
+        probe.add(pvname, show_desc=args.desc)
     probe.show()
     ret = app.exec()
     from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
