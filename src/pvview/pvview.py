@@ -9,42 +9,25 @@ EXAMPLE:
 """
 
 import argparse
-import os
 import sys
 
-
-def main():
-    """Parse CLI arguments, launch the PVView window, and clean up on exit."""
-    parser = argparse.ArgumentParser(
-        prog="pvview",
-        description="Display EPICS PVs in a table.",
-    )
-    parser.add_argument(
-        "pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display"
-    )
-    parser.add_argument(
-        "--desc",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="show PV description in name column (default: enabled)",
-    )
-    args = parser.parse_args()
-    _launch(args)
+_LAZY_ATTRS = frozenset({"PVNameLabel", "PVValueLabel", "PVView"})
 
 
-def _launch(args):
-    """Import Qt/PyDM and run the GUI (called only after argparse completes)."""
-    import gc
+def _init_classes():
+    """Lazily import Qt/PyDM and inject GUI classes into module globals; idempotent."""
+    _globals = globals()
+    if "PVView" in _globals:
+        return _globals["PVNameLabel"], _globals["PVValueLabel"], _globals["PVView"]
+
+    import os
     from datetime import datetime
 
     os.environ.setdefault("QT_API", "pyside6")
 
-    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
     from pydm.widgets.display_format import DisplayFormat
     from pydm.widgets.label import PyDMLabel
-    from pydm.widgets.rules import RulesDispatcher
     from PySide6.QtGui import QFont
-    from PySide6.QtWidgets import QApplication
     from PySide6.QtWidgets import QFrame
     from PySide6.QtWidgets import QGridLayout
     from PySide6.QtWidgets import QLabel
@@ -130,6 +113,33 @@ def _launch(args):
                 my_font.setBold(True)
                 widget.setFont(my_font)
 
+    _globals["PVNameLabel"] = PVNameLabel
+    _globals["PVValueLabel"] = PVValueLabel
+    _globals["PVView"] = PVView
+    return PVNameLabel, PVValueLabel, PVView
+
+
+def __getattr__(name):
+    """Resolve Qt-dependent classes on first access without importing Qt at module load time (PEP 562)."""
+    if name in _LAZY_ATTRS:
+        _init_classes()
+        try:
+            return globals()[name]
+        except KeyError:
+            pass
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def _launch(args):
+    """Import Qt/PyDM and run the GUI (called only after argparse completes)."""
+    import gc
+
+    _, _, PVView = _init_classes()
+
+    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
+    from pydm.widgets.rules import RulesDispatcher
+    from PySide6.QtWidgets import QApplication
+
     app = QApplication.instance() or QApplication(sys.argv)
     name_header = "Name / Description" if args.desc else "PV Name"
     probe = PVView(name_header=name_header)
@@ -146,6 +156,25 @@ def _launch(args):
         rules_engine.quit()
         rules_engine.wait(1000)
     sys.exit(ret)
+
+
+def main():
+    """Parse CLI arguments, launch the PVView window, and clean up on exit."""
+    parser = argparse.ArgumentParser(
+        prog="pvview",
+        description="Display EPICS PVs in a table.",
+    )
+    parser.add_argument(
+        "pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display"
+    )
+    parser.add_argument(
+        "--desc",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="show PV description in name column (default: enabled)",
+    )
+    args = parser.parse_args()
+    _launch(args)
 
 
 if __name__ == "__main__":

@@ -21,13 +21,21 @@ def test_version():
 
 
 def test_pvview_module_attributes():
-    """Test that pvview module has expected classes and main function."""
+    """Test that pvview module exposes the expected callables at module level without importing Qt."""
+    from pvview import pvview
+
+    assert hasattr(pvview, "main")
+    assert hasattr(pvview, "_launch")
+    assert hasattr(pvview, "_init_classes")
+
+
+def test_pvview_lazy_class_access(qt_app):
+    """Test that Qt-dependent classes are accessible via module __getattr__ (PEP 562 lazy load)."""
     from pvview import pvview
 
     assert hasattr(pvview, "PVNameLabel")
     assert hasattr(pvview, "PVValueLabel")
     assert hasattr(pvview, "PVView")
-    assert hasattr(pvview, "main")
 
 
 # ---------------------------------------------------------------------------
