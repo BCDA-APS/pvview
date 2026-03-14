@@ -159,9 +159,14 @@ def _launch(args):
 
 def main():
     """Parse CLI arguments, launch the PVView window, and clean up on exit."""
+    from importlib.metadata import version
+
     parser = argparse.ArgumentParser(
         prog="pvview",
         description="Display EPICS PVs in a table.",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {version('pvview')}"
     )
     parser.add_argument(
         "pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display"

@@ -271,3 +271,15 @@ def test_main_no_pvargs_exits(qt_app, monkeypatch):
     with pytest.raises(SystemExit) as exc_info:
         main()
     assert exc_info.value.code != 0
+
+
+def test_main_version_exits(monkeypatch, capsys):
+    """Test that --version prints a version string and exits with code 0."""
+    from pvview.pvview import main
+
+    monkeypatch.setattr(sys, "argv", ["pvview", "--version"])
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+    assert exc_info.value.code == 0
+    output = capsys.readouterr()
+    assert "pvview" in output.out
