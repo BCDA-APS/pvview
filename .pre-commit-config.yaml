@@ -1,3 +1,5 @@
+# hint: pre-commit run --all-files
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -7,8 +9,10 @@ repos:
       - id: check-yaml
       - id: check-toml
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.8
     hooks:
-      - id: isort
-        args: ["--sl"]
+      - id: ruff # replaces Flake8, isort, pydocstyle, pyupgrade
+        args:
+          - --fix
+      - id: ruff-format # replaces Black

@@ -251,7 +251,9 @@ def test_value_changed_sets_timestamp_tooltip(qt_app):
     widget = PVValueLabel()
     widget.value_changed(42)
     tip = widget.toolTip()
-    assert re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", tip), f"unexpected tooltip: {tip!r}"
+    assert re.match(
+        r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", tip
+    ), f"unexpected tooltip: {tip!r}"
 
 
 def test_main_no_pvargs_exits(qt_app, monkeypatch):

@@ -12,14 +12,14 @@ import argparse
 import sys
 from datetime import datetime
 
+from pydm.widgets.display_format import DisplayFormat
+from pydm.widgets.label import PyDMLabel
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QFrame
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QWidget
-from pydm.widgets.display_format import DisplayFormat
-from pydm.widgets.label import PyDMLabel
 
 
 class PVNameLabel(PyDMLabel):
@@ -100,12 +100,16 @@ class PVView(QWidget):
 
 
 def main():
+    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
+
     app = QApplication.instance() or QApplication(sys.argv)
     parser = argparse.ArgumentParser(
         prog="pvview",
         description="Display EPICS PVs in a table.",
     )
-    parser.add_argument("pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display")
+    parser.add_argument(
+        "pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display"
+    )
     parser.add_argument(
         "--desc",
         action=argparse.BooleanOptionalAction,
@@ -119,7 +123,6 @@ def main():
         probe.add(pvname, show_desc=args.desc)
     probe.show()
     ret = app.exec()
-    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
     if PyEPICSPlugin.thread_pool is not None:
         PyEPICSPlugin.thread_pool.shutdown(wait=True)
     sys.exit(ret)

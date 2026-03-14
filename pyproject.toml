@@ -8,12 +8,14 @@ dynamic = ["version"]
 description = "display one or more EPICS PVs in a PyDM GUI window as a table"
 readme = "README.md"
 authors = [{name = "Pete R. Jemian", email = "jemian@anl.gov"}]
-license = {text = "OPEN SOURCE LICENSE (UChicago Argonne)"}
+# license = {text = "OPEN SOURCE LICENSE (UChicago Argonne)"}
+license = "LicenseRef-ANL-Open-Source-License"
+license-files = ["LICENSE"]
 keywords = ["Python", "Qt6", "PyDM", "EPICS"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: Free To Use But Restricted",
+    # "License :: Free To Use But Restricted",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -22,22 +24,25 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = ["pydm", "PySide6"]
 
-[project.optional-dependencies]
-dev = ["pre-commit", "pytest", "pytest-cov"]
-
 [project.gui-scripts]
 pvview = "pvview.pvview:main"
 
+[project.optional-dependencies]
+dev = ["pre-commit", "pytest", "pytest-cov"]
+
+[project.urls]
+Homepage = "https://github.com/BCDA-APS/pvview/"
+
+[tool.isort]
+force_single_line = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools_scm]
-
-[tool.isort]
-force_single_line = true
-
-[project.urls]
-Homepage = "https://github.com/BCDA-APS/pvview/"
