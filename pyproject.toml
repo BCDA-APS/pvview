@@ -13,9 +13,9 @@ license = "LicenseRef-ANL-Open-Source-License"
 license-files = ["LICENSE"]
 keywords = ["Python", "Qt5", "PyDM", "EPICS"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
-    # "License :: Free To Use But Restricted",
+    "License :: Free To Use But Restricted",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",

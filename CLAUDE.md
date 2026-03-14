@@ -14,6 +14,9 @@ pre-commit install
 # Run all tests
 pytest
 
+# Run all tests with coverage report
+pytest --cov=pvview
+
 # Run a single test
 pytest tests/test_pvview.py::test_pvview_instantiation
 
