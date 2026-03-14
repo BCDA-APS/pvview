@@ -1,27 +1,41 @@
 # pvview
 display one or more EPICS PVs in a PyDM GUI window as a table
 
+## Install
 
-INSTALL:
+```bash
+pip install pvview
+```
 
-    pip install pvview
+### Install with conda (recommended)
 
-Most Recent Tagged Build for conda installation
+Use conda to create an isolated Python environment, then pip for everything else:
 
-[![Anaconda-Server Badge](https://anaconda.org/BCDA-APS/pvview/badges/installer/conda.svg)](https://conda.anaconda.org/aps-anl-tag)
-[![Anaconda-Server Badge](https://anaconda.org/BCDA-APS/pvview/badges/platforms.svg)](https://anaconda.org/aps-anl-tag/pvview)
-[![Anaconda-Server Badge](https://anaconda.org/BCDA-APS/pvview/badges/version.svg)](https://anaconda.org/aps-anl-tag/pvview)
-[![Anaconda-Server Badge](https://anaconda.org/BCDA-APS/pvview/badges/downloads.svg)](https://anaconda.org/aps-anl-tag/pvview)
+```bash
+conda create -n pvview python=3.11
+conda activate pvview
+pip install pvview
+```
 
-    conda install -c aps-anl-tag -c pydm-tag -c conda-forge pvview
+### Install from source
 
-EXAMPLE:
+```bash
+git clone https://github.com/BCDA-APS/pvview.git
+cd pvview
+conda create -n pvview python=3.11
+conda activate pvview
+pip install -e .
+```
 
-    pvview.py {sky,xxx}:{iso8601,:UPTIME} xxx:alldone adsky:cam1:Acquire &
+## Example
+
+```
+pvview {sky,xxx}:{iso8601,:UPTIME} xxx:alldone adsky:cam1:Acquire &
+```
 
 ![pvview image](screen.jpg)
 
-The `pvview` code was migrated from the 
-[BcdaQWidgets](https://github.com/BCDA-APS/bcdaqwidgets) project 
+The `pvview` code was migrated from the
+[BcdaQWidgets](https://github.com/BCDA-APS/bcdaqwidgets) project
 (PyQt4-aware widgets for Python2)
 to use the [PyDM](https://github.com/slaclab/pydm) project.
