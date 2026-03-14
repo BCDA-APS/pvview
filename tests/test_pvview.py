@@ -21,25 +21,41 @@ def test_version():
 
 
 def test_pvview_module_attributes():
-    """Test that pvview module has PVView class and main function."""
+    """Test that pvview module has expected classes and main function."""
     from pvview import pvview
 
+    assert hasattr(pvview, "PVNameLabel")
+    assert hasattr(pvview, "PVValueLabel")
     assert hasattr(pvview, "PVView")
     assert hasattr(pvview, "main")
 
 
 # ---------------------------------------------------------------------------
-# Qt-dependent tests — skipped automatically when PyQt6 is not available
+# Qt-dependent tests — skipped automatically when PySide6 is not available
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def qt_app():
     """Provide a QApplication instance; skip if PySide6 is not available."""
     pytest.importorskip("PySide6")
     from PySide6.QtWidgets import QApplication
 
-    return QApplication.instance() or QApplication(sys.argv)
+    app = QApplication.instance() or QApplication(sys.argv)
+    yield app
+    import gc
+
+    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
+    from pydm.widgets.rules import RulesDispatcher
+
+    gc.collect()
+    if PyEPICSPlugin.thread_pool is not None:
+        PyEPICSPlugin.thread_pool.shutdown(wait=True)
+    rules_engine = RulesDispatcher().rules_engine
+    if rules_engine.isRunning():
+        rules_engine.requestInterruption()
+        rules_engine.quit()
+        rules_engine.wait(1000)
 
 
 def test_pvview_instantiation(qt_app):
@@ -147,8 +163,42 @@ def test_pvview_add_deduplication(qt_app):
     assert len(view.db) == 1
 
 
+def test_pvnamelabel_shows_pvname_when_disconnected(qt_app):
+    """Test that PVNameLabel shows the PV name (not the channel URI) when disconnected."""
+    from pvview.pvview import PVNameLabel
+
+    label = PVNameLabel("fake:pv")
+    assert label.text() == "fake:pv"
+
+
+def test_pvnamelabel_desc_channel(qt_app):
+    """Test that PVNameLabel connects to the .DESC field of the base record."""
+    from pvview.pvview import PVNameLabel
+
+    label = PVNameLabel("fake:pv.RBV")
+    assert label.channel == "ca://fake:pv.DESC"
+
+
+def test_pvnamelabel_value_changed_shows_desc(qt_app):
+    """Test that PVNameLabel shows a non-empty DESC value."""
+    from pvview.pvview import PVNameLabel
+
+    label = PVNameLabel("fake:pv")
+    label.value_changed("Motor 1 readback")
+    assert label.text() == "Motor 1 readback"
+
+
+def test_pvnamelabel_value_changed_falls_back_to_pvname(qt_app):
+    """Test that PVNameLabel falls back to PV name when DESC is empty."""
+    from pvview.pvview import PVNameLabel
+
+    label = PVNameLabel("fake:pv")
+    label.value_changed("")
+    assert label.text() == "fake:pv"
+
+
 def test_pydmlabel_display_format_is_string(qt_app):
-    """Test that labels added by add() use DisplayFormat.String for waveform decoding."""
+    """Test that value labels added by add() use DisplayFormat.String for waveform decoding."""
     from pydm.widgets.display_format import DisplayFormat
 
     from pvview.pvview import PVView
@@ -171,10 +221,11 @@ def test_value_changed_sets_timestamp_tooltip(qt_app):
     assert re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", tip), f"unexpected tooltip: {tip!r}"
 
 
-def test_main_raises_without_pv_args(qt_app, monkeypatch):
-    """Test that main() raises RuntimeError when no PV names are provided."""
+def test_main_no_pvargs_exits(qt_app, monkeypatch):
+    """Test that main() exits with an error when no PV names are provided."""
     from pvview.pvview import main
 
     monkeypatch.setattr(sys, "argv", ["pvview"])
-    with pytest.raises(RuntimeError, match="Need one or more EPICS PVs"):
+    with pytest.raises(SystemExit) as exc_info:
         main()
+    assert exc_info.value.code != 0

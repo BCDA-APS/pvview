@@ -8,6 +8,7 @@ EXAMPLE:
     pvview xxx:m1.DESC xxx:m1.RBV xxx:m1.VAL xxx:m1.DMOV &
 """
 
+import argparse
 import sys
 from datetime import datetime
 
@@ -19,6 +20,23 @@ from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QWidget
 from pydm.widgets.display_format import DisplayFormat
 from pydm.widgets.label import PyDMLabel
+
+
+class PVNameLabel(PyDMLabel):
+    """PyDMLabel showing a PV's .DESC field; falls back to the PV name when DESC is empty or unavailable."""
+
+    def __init__(self, pvname, *args, **kwargs):
+        self._pvname = pvname
+        desc_pvname = pvname.split(".")[0] + ".DESC"
+        super().__init__(init_channel=f"ca://{desc_pvname}", *args, **kwargs)
+
+    def value_changed(self, new_value):
+        super().value_changed(new_value)
+        if not self.text().strip():
+            self.setText(self._pvname)
+
+    def check_enable_state(self):
+        self.setText(self._pvname)
 
 
 class PVValueLabel(PyDMLabel):
@@ -59,7 +77,7 @@ class PVView(QWidget):
         if pvname in self.db:
             return
         row = len(self.db) + 1
-        label = QLabel(pvname)
+        label = PVNameLabel(pvname)
         widget = PVValueLabel(init_channel=f"ca://{pvname}")
         widget.useAlarmState = True
         self.formatWidget(label)
@@ -82,14 +100,21 @@ class PVView(QWidget):
 
 def main():
     app = QApplication.instance() or QApplication(sys.argv)
+    parser = argparse.ArgumentParser(
+        prog="pvview",
+        description="Display EPICS PVs in a table.",
+    )
+    parser.add_argument("pvnames", nargs="+", metavar="PVNAME", help="EPICS PV name(s) to display")
+    args = parser.parse_args()
     probe = PVView()
-    if len(sys.argv) < 2:
-        raise RuntimeError("Need one or more EPICS PVs on command line")
-    pvnames = sys.argv[1:]
-    for pvname in pvnames:
+    for pvname in args.pvnames:
         probe.add(pvname)
     probe.show()
-    sys.exit(app.exec())
+    ret = app.exec()
+    from pydm.data_plugins.epics_plugins.pyepics_plugin_component import PyEPICSPlugin
+    if PyEPICSPlugin.thread_pool is not None:
+        PyEPICSPlugin.thread_pool.shutdown(wait=True)
+    sys.exit(ret)
 
 
 if __name__ == "__main__":
