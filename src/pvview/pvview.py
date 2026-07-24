@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-display one or more EPICS PVs in a PyDM GUI window as a table
+Display one or more EPICS PVs in a PyDM GUI window as a table.
 
 EXAMPLE:
 
@@ -63,7 +63,8 @@ def _init_classes():
         def value_changed(self, new_value):
             """Update the tooltip with the current timestamp on each new value."""
             super().value_changed(new_value)
-            self.setToolTip(datetime.now().isoformat(sep=" ", timespec="seconds"))
+            now = datetime.now().astimezone()
+            self.setToolTip(now.isoformat(sep=" ", timespec="seconds"))
 
     class PVView(QWidget):
         """Display EPICS PVs in a GUI table."""
