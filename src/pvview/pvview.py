@@ -63,7 +63,8 @@ def _init_classes():
         def value_changed(self, new_value):
             """Update the tooltip with the current timestamp on each new value."""
             super().value_changed(new_value)
-            self.setToolTip(datetime.now().astimezone().isoformat(sep=" ", timespec="seconds"))
+            now = datetime.now().astimezone()
+            self.setToolTip(now.isoformat(sep=" ", timespec="seconds"))
 
     class PVView(QWidget):
         """Display EPICS PVs in a GUI table."""
